@@ -1,4 +1,6 @@
 <div id ="contest" class="span11 center_elem  main_elem">
+    <h2>Visi produkti</h2>
+    <a href="<?php echo base_url('/Product/add_product'); ?>">Pievienot produktu</a>
     <table border="0">
         <tr>
             <td>Produkts</td>

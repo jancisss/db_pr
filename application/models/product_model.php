@@ -35,10 +35,21 @@ class Product_model extends CI_Model {
         return $data;
     }
 
+    public function get_all_firms() {
+        $query = $this->db->select('firmas_ID, reg_nr, nosaukums, adrese, tel_nr')->
+                from('Firmas');
+        //  where('parent', $parent)->
+        // order_by('value', 'desc');
+
+        $data = $query->get()->result();
+        return $data;
+    }
+
     public function get_firm_by_ID($firm_ID) {
         $query = $this->db->select('firmas_ID, reg_nr, nosaukums, adrese, tel_nr')->
                 where('firmas_ID', $firm_ID)->
-                from('Firmas');;
+                from('Firmas');
+        ;
         //  where('parent', $parent)->
         // order_by('value', 'desc');
 
@@ -64,6 +75,7 @@ class Product_model extends CI_Model {
         $data = $query->get()->result();
         return $data;
     }
+
     public function get_product_firms($product_ID) {
         $query = $this->db->select('firmas_ID')->
                 where('produkts_ID', $product_ID)->
@@ -71,6 +83,36 @@ class Product_model extends CI_Model {
         $data = $query->get()->result();
         return $data;
     }
+
+    public function publiceted($product_ID) {
+        $query = $this->db->select('RR.reklam_reizes, RR.Cena, RR.pasutitaj_per_ID, RR.firmas_firmas_ID, IRV.valsts, IRV.pilseta, IRV.no, IRV.lidz')->
+                from('Reklam_reizes AS RR, Reklamejas AS R, Iesp_rekl_vietas AS IRV')->
+                where('R.Produkti_produkts_ID', $product_ID)->
+                where('RR.reklam_reizes = R.reklam_reizes_ID')->
+                where('IRV.Reklam_reizes_ID = RR.reklam_reizes');
+        $data = $query->get()->result();
+
+        return $data;
+    }
     
+     public function save_product($nosaukums, $cena, $aparksts, $raz_firm) {
+        $data = array(
+            'nosaukums' => $nosaukums,
+            'apraksts' => $aparksts,
+            'raz_firm_ID' => $raz_firm,
+            'cena' => $cena
+        );
+        $this->db->insert('Produkti', $data);
+        $this->id = $this->db->insert_id();
+        return $this;
+    }
+    
+     public function save_izplat_firm($product_ID, $firm_ID) {
+        $data = array(
+            'produkts_ID' => $product_ID,
+            'firmas_ID' => $firm_ID
+        );
+        $this->db->insert('Izplat_firmas', $data);
+    }
 
 }
