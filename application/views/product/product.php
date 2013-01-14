@@ -1,7 +1,8 @@
 <div id ="contest" class="span11 center_elem  main_elem">
 
-    <?php print_r($firms);
+    <?php //print_r($firms);
     ?>
+    <a href="<?php echo base_url("Product/edit_p").'/'.$product[0]->produkts_ID; ?>">Labot</a>
     <table border="0">
         <tr>
             <td>Nosaukums</td>

@@ -85,17 +85,19 @@ class Product_model extends CI_Model {
     }
 
     public function publiceted($product_ID) {
-        $query = $this->db->select('RR.reklam_reizes, RR.Cena, RR.pasutitaj_per_ID, RR.firmas_firmas_ID, IRV.valsts, IRV.pilseta, IRV.no, IRV.lidz')->
-                from('Reklam_reizes AS RR, Reklamejas AS R, Iesp_rekl_vietas AS IRV')->
+        $query = $this->db->select('RR.reklam_reizes_ID, RR.Cena, RR.pasutitaj_per_ID, RR.firmas_firmas_ID, IRV.no, IRV.lidz, Pilseta.pilseta, Valsts.valsts')->
+                from('Reklam_reizes AS RR, Reklamejas AS R, Iesp_rekl_vietas AS IRV, Valsts, Pilseta')->
                 where('R.Produkti_produkts_ID', $product_ID)->
-                where('RR.reklam_reizes = R.reklam_reizes_ID')->
-                where('IRV.Reklam_reizes_ID = RR.reklam_reizes');
+                where('RR.reklam_reizes_ID = R.reklam_reizes_ID')->
+                where('Valsts.valsts_ID = IRV.valsts_ID')->
+                where('Pilseta.pilseta_ID = IRV.pilseta_ID')->
+                where('IRV.Reklam_reizes_ID = RR.Reklam_reizes_ID');
         $data = $query->get()->result();
 
         return $data;
     }
-    
-     public function save_product($nosaukums, $cena, $aparksts, $raz_firm) {
+
+    public function save_product($nosaukums, $cena, $aparksts, $raz_firm) {
         $data = array(
             'nosaukums' => $nosaukums,
             'apraksts' => $aparksts,
@@ -106,13 +108,34 @@ class Product_model extends CI_Model {
         $this->id = $this->db->insert_id();
         return $this;
     }
-    
-     public function save_izplat_firm($product_ID, $firm_ID) {
+
+    public function save_izplat_firm($product_ID, $firm_ID) {
         $data = array(
             'produkts_ID' => $product_ID,
             'firmas_ID' => $firm_ID
         );
         $this->db->insert('Izplat_firmas', $data);
+    }
+
+    public function update_product($nosaukums, $cena, $aparksts, $raz_firm) {
+        $data = array(
+            'nosaukums' => $nosaukums,
+            'apraksts' => $aparksts,
+            'raz_firm_ID' => $raz_firm,
+            'cena' => $cena
+        );
+        $this->db->update('Produkti', $data);
+        // $this->id = $this->db->insert_id();
+        return $this;
+    }
+
+    public function check_site($product_ID, $firmas_ID) {
+        $query = $this->db->select('firmas_ID')->
+                where('produkts_ID', $product_ID)->
+                where('firmas_ID', $firmas_ID)->
+                from('Izplat_firmas');
+        $data = $query->get()->result();
+        return $data;
     }
 
 }

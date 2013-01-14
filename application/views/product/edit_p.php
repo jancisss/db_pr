@@ -1,7 +1,8 @@
 <div id ="contest" class="span11 center_elem  main_elem">
-    <h2>Pievienot produktu  </h2>
+    <h2>Labot produktu  </h2>
     <div class ='form_settings'>
-        <?php echo form_open('Product/takeadd'); ?>
+        <?php echo form_open("Product/takeedit"); 
+        //print_r($product);?>
 
         <p>
             <?php
@@ -48,9 +49,7 @@
             echo form_textarea($data);
             ?>
         </p>
-        <h3>Izpaltītājfirmas</h3>
         <?php
-        
         foreach ($firms as $firm) {
 
             echo '<p><span>' . form_label($firm->nosaukums, $firm->firmas_ID) . '</span>';
@@ -79,14 +78,16 @@
      
 
 
-
-
-
-
-
-
-
         <?php
+        
+        $data = array(
+                'name' => 'product_ID',
+                'type' =>'hidden',
+                'value' => $product->product_ID
+            );
+
+            echo form_input($data);
+        
         $data = array(
             'name' => 'save',
             'class' => 'submit',

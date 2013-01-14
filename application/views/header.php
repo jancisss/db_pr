@@ -15,6 +15,7 @@
             <a class="brand" href="<?php echo base_url('/Product');?>">Datubāzes 2</a>            
             <ul class="nav">
               <li class=""><a href="<?php echo base_url('/Product'); ?>">Produkti</a></li>
+              <li class=""><a href="<?php echo base_url('/Products_public'); ?>">Reklamēšanās reizes</a></li>
               
             </ul>
             
