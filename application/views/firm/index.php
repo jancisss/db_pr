@@ -1,5 +1,5 @@
 <div id ="contest" class="span11 center_elem  main_elem">
-   
+   <a href="<?php echo base_url('/Product/edit_firm').'/'.$firm[0]->firmas_ID; ?>">Labot firmas informāciju</a>
     <?php // print_r($firm);
     ?>
     <table border="0">

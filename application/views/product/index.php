@@ -4,14 +4,17 @@
     <table border="0">
         <tr>
             <td>Produkts</td>
-            <td>Reklamēšanās reizes</td>
+           <!--- <td>Reklamēšanās reizes</td> -->
+            <td>Dzēst</td>
         </tr
 
         <?php
+       // print_r($products);
         foreach ($products as $product) {
             ?><tr>
                 <td><a href="<?php echo base_url('/Product/product') . '/' . $product->produkts_ID; ?>"><?php echo $product->nosaukums; ?></a></td>
-                <td><?php echo $product->publiced; ?></td>
+               <!-- <td><?php //echo $product->publiced; ?></td> -->
+                <td><a href="<?php echo base_url("Product/delete_product").'/'.$product->produkts_ID; ?>">Dzēst</a></td>
             </tr><?php
     }
         ?>

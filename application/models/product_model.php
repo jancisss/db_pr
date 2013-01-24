@@ -58,13 +58,18 @@ class Product_model extends CI_Model {
     }
 
     public function product_publiced($product_ID) {
-        $query = $this->db->select('Produkti_produkts_ID')->
-                where('Produkti_produkts_ID', $product_ID)->
-                from('Reklamejas');
+        $query = $this->db->select('count(RR.Reklam_reizes_ID)')->
+                where('produkts_ID', $product_ID)->
+                where('R.Produkti_produkts_ID = R.reklam_reizes_ID')->
+                where('R.reklam_reizes_ID = RR.Reklam_reizes_ID')->
+                group_by('RR.Reklam_reizes_ID')->
+                from('Reklam_reizes as RR, Reklamejas AS R, Produkti AS P');
 
+
+        //  where('parent', $parent)->
         // order_by('value', 'desc');
 
-        $data = $query->get()->num_rows();
+        $data = $query->get()->result();
         return $data;
     }
 
@@ -117,13 +122,14 @@ class Product_model extends CI_Model {
         $this->db->insert('Izplat_firmas', $data);
     }
 
-    public function update_product($nosaukums, $cena, $aparksts, $raz_firm) {
+    public function update_product($nosaukums, $cena, $aparksts, $raz_firm, $ID) {
         $data = array(
             'nosaukums' => $nosaukums,
             'apraksts' => $aparksts,
             'raz_firm_ID' => $raz_firm,
             'cena' => $cena
         );
+        $this->db->where('produkts_ID', $ID);
         $this->db->update('Produkti', $data);
         // $this->id = $this->db->insert_id();
         return $this;
@@ -138,5 +144,45 @@ class Product_model extends CI_Model {
         return $data;
     }
 
+    public function save_firm($reg_nr, $nosaukums, $adrese, $tel_nr) {
+        $data = array(
+            'reg_nr' => $reg_nr,
+            'nosaukums' => $nosaukums,
+            'adrese' => $adrese,
+            'tel_nr' => $tel_nr
+        );
+        $this->db->insert('Firmas', $data);
+        $this->id = $this->db->insert_id();
+        return $this;
+    }
+
+    public function update_firm($reg_nr, $nosaukums, $adrese, $tel_nr, $ID) {
+        $data = array(
+            'reg_nr' => $reg_nr,
+            'nosaukums' => $nosaukums,
+            'adrese' => $adrese,
+            'tel_nr' => $tel_nr
+        );
+        $this->db->where('firmas_ID', $ID);
+        $this->db->update('Firmas', $data);
+        // $this->id = $this->db->insert_id();
+        return $this;
+    }
+
+    public function delete_person($person_ID = 0) {
+        $this->db->delete('Personas', array('personas_ID' => $person_ID));
+    }
     
+    public function delete_product($product_ID = 0) {
+        $this->db->delete('Produkti', array('produkts_ID' => $product_ID));
+    }
+    
+     public function delete_firm($firm_ID = 0) {
+        $this->db->delete('Firmas', array('firmas_ID' => $firm_ID));
+    }
+    
+     public function delete_group($group_ID = 0) {
+        $this->db->delete('Per_grupa', array('grupa_ID' => $group_ID));
+    }
+
 }

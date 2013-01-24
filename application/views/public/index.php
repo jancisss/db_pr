@@ -11,9 +11,11 @@
             <td>Līdz</td>
             <td>Pilsēta</td>
             <td>Valsts</td>
+           
         </tr
 
         <?php
+        //print_r($publiced);
         foreach ($publiced as $p) {
             ?><tr>
                 <td> <?php echo $p->nosaukums; ?></td>
@@ -23,6 +25,7 @@
                 <td><?php echo $p->lidz; ?></td>
                 <td><?php echo $p->pilseta; ?></td>
                 <td><?php echo $p->valsts; ?></td>
+                
             </tr><?php
     }
         ?>

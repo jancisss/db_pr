@@ -8,6 +8,7 @@ class Products_public extends CI_Controller {
     function __construct() {
         parent::__construct();
         $this->load->model('Public_model');
+        $this->load->model('Product_model');
         $this->load->library('form_validation');
     }
 
@@ -135,7 +136,7 @@ class Products_public extends CI_Controller {
 
         $this->Public_model->update_place($this->input->post('cena'), $this->input->post('adrese'), $this->input->post('no'), $this->input->post('lidz'), $this->input->post('country'), $this->input->post('city'), $this->input->post('ID'));
         //save izpaltītājfirmas
-        //redirect("Products_public");
+        redirect("Products_public/places");
     }
 
     public function places() {
@@ -156,6 +157,7 @@ class Products_public extends CI_Controller {
 
         $data['public']->cena = '';
         $data['public']->produkts_ID = '';
+        $data['public']->ID = '';
         //Pasūtītajs persona
         $data['persons'] = $this->Public_model->get_all_persons();
         foreach ($data['persons'] as $person) {
@@ -186,6 +188,19 @@ class Products_public extends CI_Controller {
         $data['defult_place'] = 0;
         $place_array[0] = 'Izvēlieties vienu';
         $data['place_drop'] = $place_array;
+
+
+        $data['products'] = $this->Product_model->get_all_products();
+        //print_r($data['products']);
+        foreach ($data['products'] as $product) {
+            $product->checked = FALSE;
+            $product_array[$product->produkts_ID] = $product->nosaukums;
+        }
+
+        $data['defult_product'] = 0;
+        $product_array[0] = 'Izvēlieties vienu';
+        $data['product_drop'] = $product_array;
+
         $this->load->view('/public/add', $data);
         $this->load->view('footer');
     }
@@ -199,12 +214,90 @@ class Products_public extends CI_Controller {
         $place_ID = $this->Public_model->save_public($this->input->post('cena'), $this->input->post('firm'), $this->input->post('person'), $this->input->post('place'));
         //save izpaltītājfirmas
 
-        $this->Public_model->save_public_place($this->input->post('produkts_ID'), $place_ID->id);
-        $this->Public_model->save_public_site($this->input->post('produkts_ID'), $place_ID->id);
-        echo $this->input->post('produkts_ID');
-        print_r($place_ID);
+        $this->Public_model->save_public_place($this->input->post('produkts_ID'), $place_ID[0]->Reklam_reizes_ID);
+        $this->Public_model->save_public_site($this->input->post('produkts_ID'), $place_ID[0]->Reklam_reizes_ID);
+        echo$place_ID[0]->Reklam_reizes_ID;
+        //print_r($place_ID);
+        redirect("Products_public");
+    }
+    
+    
+    
+       public function takeplace_edit() {
 
-        //redirect("Products_public");
+
+
+
+        //svae product
+        $this->Public_model->update_public($this->input->post('cena'), $this->input->post('firm'), $this->input->post('person'), $this->input->post('place'), $this->input->post('ID'));
+        //save izpaltītājfirmas
+
+        $this->Public_model->save_public_place($this->input->post('produkts_ID'), $this->input->post('ID'));
+        $this->Public_model->upadte_public_site($this->input->post('produkts_ID'),  $this->input->post('ID'));
+        //echo$place_ID[0]->Reklam_reizes_ID;
+        //print_r($place_ID);
+        redirect("Products_public");
+    }
+
+    
+
+    public function edit($ID) {
+
+        $this->load->view('header');
+
+
+
+
+        $public = $this->Public_model->get_public_by_ID($ID);
+        Print_r($public);
+        $data['public']->cena = $public[0]->Cena;
+        $data['public']->ID = $ID;
+        $data['public']->produkts_ID = '';
+        //Pasūtītajs persona
+        $data['persons'] = $this->Public_model->get_all_persons();
+        foreach ($data['persons'] as $person) {
+            $person->checked = FALSE;
+            $person_array[$person->personas_ID] = $person->vards . ' ' . $person->uzvards . ' ' . $person->personas_kods;
+        }
+
+        $data['defult_person'] = $public[0]->pasutitaj_per_ID;
+        $person_array[0] = 'Izvēlieties vienu';
+        $data['person_drop'] = $person_array;
+        //pasūtīt'ājs firma
+        $data['firms'] = $this->Public_model->get_all_firms();
+        foreach ($data['firms'] as $firm) {
+            $firm->checked = FALSE;
+            $firm_array[$firm->firmas_ID] = $firm->nosaukums . '    ' . $firm->reg_nr;
+        }
+
+        $data['defult_firm'] = $public[0]->firmas_firmas_ID;
+        $firm_array[0] = 'Izvēlieties vienu';
+        $data['firm_drop'] = $firm_array;
+
+        $data['places_S'] = $this->Public_model->get_all_places();
+        foreach ($data['places_S'] as $place_S) {
+            $place_S->checked = FALSE;
+            $place_array[$place_S->iesp_rekl_vietas_ID] = $place_S->valsts . ' ' . $place_S->pilseta . '  ' . $place_S->adrese;
+        }
+
+        $data['defult_place'] = $public[0]->iesp_rekl_vietas_ID;
+        $place_array[0] = 'Izvēlieties vienu';
+        $data['place_drop'] = $place_array;
+
+
+        $data['products'] = $this->Product_model->get_all_products();
+        //print_r($data['products']);
+        foreach ($data['products'] as $product) {
+            $product->checked = FALSE;
+            $product_array[$product->produkts_ID] = $product->nosaukums;
+        }
+
+        $data['defult_product'] = $public[0]->produkts_ID;
+        $product_array[0] = 'Izvēlieties vienu';
+        $data['product_drop'] = $product_array;
+
+        $this->load->view('/public/add', $data);
+        $this->load->view('footer');
     }
 
     public function all_persons() {
@@ -331,12 +424,8 @@ class Products_public extends CI_Controller {
         $this->load->view('public/edit_person_group', $data); //galvenais skats
         $this->load->view('footer');
     }
-    
-    
-    
 
-    
-       public function take_edit_person_group() {
+    public function take_edit_person_group() {
 
 
 

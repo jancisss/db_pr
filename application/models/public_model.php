@@ -26,9 +26,9 @@ class Public_model extends CI_Model {
      */
 
     public function product_publiced_place() {
-        $query = $this->db->select('*')->
-                from('produkti_reklāmas_vietās');
-        //  where('parent', $parent)->
+        $query = $this->db->select('v.nosaukums, v.Cena, v.adrese, v.no, v.lidz, v.pilseta, v.valsts')->
+                from('produkti_reklāmas_vietās AS v');
+         
         // order_by('value', 'desc');
 
         $data = $query->get()->result();
@@ -88,11 +88,13 @@ class Public_model extends CI_Model {
             'adrese' => $adrese,
             'no' => $no,
             'lidz' => $lidz,
-            'pilseta_ID' => $country,
-            'valsts_ID' => $city,
+            'pilseta_ID' => $city,
+            'valsts_ID' => $country
         );
-        $this->db->insert('iesp_rekl_vietas', $data);
+        $this->db->insert('Iesp_rekl_vietas', $data);
         $this->id = $this->db->insert_id();
+
+
         return $this;
     }
 
@@ -114,8 +116,8 @@ class Public_model extends CI_Model {
             'adrese' => $adrese,
             'no' => $no,
             'lidz' => $lidz,
-            'pilseta_ID' => $country,
-            'valsts_ID' => $city,
+            'pilseta_ID' => $city,
+            'valsts_ID' => $country,
         );
         $this->db->where('iesp_rekl_vietas_ID', $ID);
         $this->db->update('Iesp_rekl_vietas', $data);
@@ -133,8 +135,6 @@ class Public_model extends CI_Model {
         $data = $query->get()->result();
         return $data;
     }
-    
-    
 
     public function get_all_persons() {
         $query = $this->db->select('personas_ID, vards, uzvards, personas_kods')->
@@ -160,72 +160,89 @@ class Public_model extends CI_Model {
         );
         $this->db->insert('Reklam_reizes', $data);
         $this->id = $this->db->insert_id();
-        return $this;
+
+        $query = $this->db->select('Reklam_reizes_ID')->
+                order_by('Reklam_reizes_ID', 'desc')->
+                limit('1')->
+                from('Reklam_reizes');
+
+        $data = $query->get()->result();
+
+
+        return $data;
+    }
+
+    public function update_public($cena, $firmas_firmas_ID, $pasutitaj_per_ID, $ID) {
+        $data = array(
+            'cena' => $cena,
+            'pasutitaj_per_ID' => $pasutitaj_per_ID,
+            'firmas_firmas_ID' => $firmas_firmas_ID
+        );
+        $this->db->where('Reklam_reizes_ID', $ID);
+        $this->db->update('Reklam_reizes', $data);
+        return $data;
     }
 
     public function save_public_place($place_ID, $Reklam_reize) {
         $data = array(
             'Reklam_reizes_ID' => $Reklam_reize
-            );
+        );
 
         $this->db->where('iesp_rekl_vietas_ID', $place_ID);
         $this->db->update('Iesp_rekl_vietas', $data);
         // $this->id = $this->db->insert_id();
         return $this;
     }
+    
+   
 
     public function save_public_site($Produkti_produkts_ID, $reklam_reizes_ID) {
         $data = array(
-            'Produkti_produkts_ID' => $Produkti_produkts_ID,
-            'reklam_reizes_ID' => $reklam_reizes_ID
+            'Produkti_produkts_ID' => $Produkti_produkts_ID
+            
+            
         );
-        $this->db->insert('Reklamejas', $data);
-        $this->id = $this->db->insert_id();
+       $this->db->where('reklam_reizes_ID', $reklam_reizes_ID);
+        $this->db->update('Reklamejas', $data);
         return $this;
     }
-    
-    
+
     public function get_all_persons_ag() {
-        $query = $this->db->select('p.personas_ID, p.vards, p.uzvards, p.personas_kods, p.adrese, g.nosaukums')->
+        $query = $this->db->select('p.personas_ID, p.vards, p.uzvards, p.personas_kods, p.adrese, g.nosaukums, g.grupa_ID')->
                 from('Personas AS P, Per_grupa AS G')->
-        //  where('parent', $parent)->
-        // order_by('value', 'desc');
-         where('P.pas_grupa_ID = G.grupa_ID');
+                //  where('parent', $parent)->
+                order_by('uzvards', 'ASC')->
+                where('P.pas_grupa_ID = G.grupa_ID');
         $data = $query->get()->result();
         return $data;
     }
-    
+
     public function get_all_person_groups() {
         $query = $this->db->select('grupa_ID, nosaukums')->
-        //  where('parent', $parent)->
-        // order_by('value', 'desc');
-        from('Per_grupa');
+                //  where('parent', $parent)->
+                // order_by('value', 'desc');
+                from('Per_grupa');
         $data = $query->get()->result();
         return $data;
     }
-    
-    
-    
-     public function save_person($vards, $uzvards, $personas_kods, $adrese, $pas_grupa_ID) {
+
+    public function save_person($vards, $uzvards, $personas_kods, $adrese, $pas_grupa_ID) {
         $data = array(
             'vards' => $vards,
             'uzvards' => $uzvards,
             'personas_kods' => $personas_kods,
             'adrese' => $adrese,
             'pas_grupa_ID' => $pas_grupa_ID
-            
         );
         $this->db->insert('Personas', $data);
         $this->id = $this->db->insert_id();
         return $this;
     }
-    
-    
-     public function get_person_by_ID($person_ID) {
+
+    public function get_person_by_ID($person_ID) {
         $query = $this->db->select('vards, uzvards, personas_kods, adrese, pas_grupa_ID')->
-               
                 where('personas_ID', $person_ID)->
-                 from('Personas');
+                from('Personas');
 
         //  where('parent', $parent)->
         // order_by('value', 'desc');
@@ -233,42 +250,34 @@ class Public_model extends CI_Model {
         $data = $query->get()->result();
         return $data;
     }
-    
-    
-    
-    
-     public function update_person($vards, $uzvards, $personas_kods, $adrese, $pas_grupa_ID, $ID) {
+
+    public function update_person($vards, $uzvards, $personas_kods, $adrese, $pas_grupa_ID, $ID) {
         $data = array(
             'vards' => $vards,
             'uzvards' => $uzvards,
             'personas_kods' => $personas_kods,
             'adrese' => $adrese,
             'pas_grupa_ID' => $pas_grupa_ID
-            
         );
         $this->db->where('paersonas_ID', $ID);
         $this->db->update('Personas', $data);
         // $this->id = $this->db->insert_id();
         return $this;
     }
-    
+
     public function save_group($name) {
         $data = array(
             'nosaukums' => $name
-           
-            
         );
         $this->db->insert('Per_grupa', $data);
         $this->id = $this->db->insert_id();
         return $this;
     }
-    
-    
+
     public function get_group_by_ID($group_ID) {
         $query = $this->db->select('nosaukums')->
-               
                 where('grupa_ID', $group_ID)->
-                 from('Per_grupa');
+                from('Per_grupa');
 
         //  where('parent', $parent)->
         // order_by('value', 'desc');
@@ -276,20 +285,30 @@ class Public_model extends CI_Model {
         $data = $query->get()->result();
         return $data;
     }
-    
-    
-    
 
-    
-     
-     public function update_group($name, $ID) {
+    public function update_group($name, $ID) {
         $data = array(
             'nosaukums' => $name
-            
         );
         $this->db->where('grupa_ID', $ID);
         $this->db->update('Per_grupa', $data);
         // $this->id = $this->db->insert_id();
         return $this;
     }
+
+    public function get_public_by_ID($ID) {
+        $query = $this->db->select('P.produkts_ID, RR.Cena, RR.pasutitaj_per_ID, RR.firmas_firmas_ID, IRV.adrese, Pilseta.pilseta, Valsts.valsts, IRV.iesp_rekl_vietas_ID, Per.vards, Per.uzvards, Per.personas_kods')->
+                where('Valsts.valsts_ID = IRV.valsts_ID')->
+                where('Pilseta.pilseta_ID = IRV.pilseta_ID')->
+                where('RR.Reklam_reizes_ID = IRV.Reklam_reizes_ID')->
+                where('RR.firmas_firmas_ID = F.firmas_ID')->
+                where('RR.Reklam_reizes_ID = R.reklam_reizes_ID')->
+                where('P.produkts_ID = R.Produkti_produkts_ID')->
+                where('RR.Reklam_reizes_ID', $ID)->
+                from('Iesp_rekl_vietas AS IRV, Pilseta, Valsts, Produkti AS P, Reklamejas AS R, Firmas AS F, Personas AS Per, Reklam_reizes AS RR');
+
+        $data = $query->get()->result();
+        return $data;
+    }
+
 }

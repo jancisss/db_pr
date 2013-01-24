@@ -1,5 +1,5 @@
 <div id ="contest" class="span11 center_elem  main_elem">
-    <h2>Pievienot reklamēšanās vietu  </h2>
+    <h2>Labot reklamēšanās vietu  </h2>
     <div class ='form_settings'>
         <?php echo form_open('Products_public/takei_edit'); ?>
 

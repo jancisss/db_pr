@@ -17,6 +17,7 @@
                     <li class=""><a href="<?php echo base_url('/Product'); ?>">Produkti</a></li>
                     <li class=""><a href="<?php echo base_url('/Products_public/all_persons'); ?>">Personas</a></li>
                     <li class=""><a href="<?php echo base_url('/Products_public/places'); ?>">Vietas</a></li>
+                    <li class=""><a href="<?php echo base_url('/Product/all_firms'); ?>">Firmas</a></li>
                     <li class=""><a href="<?php echo base_url('/Products_public'); ?>">Reklamēšanās reizes</a></li>
                     <li class=""><a href="<?php echo base_url('/Products_public/lv_publiced'); ?>">Latvijā reklamētie produkti</a></li>
                     <li class=""><a href="<?php echo base_url('/Products_public/firm_public'); ?>">Firmu reklamēšanās reizes</a></li>

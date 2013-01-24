@@ -51,6 +51,65 @@ class product extends CI_Controller {
         $this->load->view('firm/index', $data); //galvenais skats
         $this->load->view('footer');
     }
+    
+       public function all_firms() {
+
+        $this->load->view('header');
+        $data['firms'] = $this->Product_model->get_all_firms();
+       
+
+        $this->load->view('product/all_firms', $data); //galvenais skats
+        $this->load->view('footer');
+    }
+
+    public function add_firm() {
+
+        $this->load->view('header');
+
+
+        $data['firm']->reg_nr = '';
+        $data['firm']->nosaukums = '';
+        $data['firm']->adrese = '';
+        $data['firm']->tel_nr = '';
+
+        $this->load->view('/product/add_firm', $data);
+        $this->load->view('footer');
+    }
+
+    public function take_add_firm() {
+
+        //svae product
+        $ID = $this->Product_model->save_firm($this->input->post('reg_nr'), $this->input->post('nosaukums'), $this->input->post('adrese'), $this->input->post('tel_nr'));
+        //save izpaltītājfirmas
+
+
+        redirect("/Product/firm/$ID->id");
+    }
+
+    public function edit_firm($firm_ID) {
+
+        $this->load->view('header');
+
+        $firm = $this->Product_model->get_firm_by_ID($firm_ID);
+        $data['firm']->reg_nr = $firm[0]->reg_nr;
+        $data['firm']->nosaukums = $firm[0]->nosaukums;
+        $data['firm']->adrese = $firm[0]->adrese;
+        $data['firm']->tel_nr = $firm[0]->tel_nr;
+        $data['firm']->ID = $firm_ID;
+
+        $this->load->view('/product/edit_firm', $data);
+        $this->load->view('footer');
+    }
+
+    public function take_edit_firm() {
+
+        //svae product
+        $this->Product_model->update_firm($this->input->post('reg_nr'), $this->input->post('nosaukums'), $this->input->post('adrese'), $this->input->post('tel_nr'), $this->input->post('ID'));
+        //save izpaltītājfirmas
+        $ID = $this->input->post('ID');
+
+        redirect("/Product/firm/$ID");
+    }
 
     public function add_product() {
 
@@ -113,9 +172,8 @@ class product extends CI_Controller {
             //save izpaltītājfirmas
             foreach ($data['firms'] as $firm) {
                 if ($firm->checked == TRUE) {
-                     $this->Product_model->save_izplat_firm($product_ID->id, $firm->firmas_ID); //SaglabÄ�ju atzÄ«mÄ“tÄ�s kategorijas
+                    $this->Product_model->save_izplat_firm($product_ID->id, $firm->firmas_ID); //SaglabÄ�ju atzÄ«mÄ“tÄ�s kategorijas
                 } //Visas atzÄ«mÄ“tÄ�s kategorijas
-               
             }
         }
         redirect("Product");
@@ -136,7 +194,7 @@ class product extends CI_Controller {
             $firm->checked = FALSE;
             $firm_array[$firm->firmas_ID] = $firm->nosaukums;
         }
-       
+
         $data['defult_firm'] = $data['product_i'][0]->raz_firm_ID;
         $categories_array[0] = 'Izvēlieties vienu';
         $data['firm_drop'] = $firm_array;
@@ -181,7 +239,7 @@ class product extends CI_Controller {
         } else {
 
             //update product
-            $this->Product_model->update_product($this->input->post('nosaukums'), $this->input->post('cena'), nl2br($this->input->post('apraksts')), $this->input->post('r_firm'));
+            $this->Product_model->update_product($this->input->post('nosaukums'), $this->input->post('cena'), nl2br($this->input->post('apraksts')), $this->input->post('r_firm'), $this->input->post('product_ID'));
             //save izpaltītājfirmas
             foreach ($data['firms'] as $firm) {
                 if ($firm->checked == TRUE) {
@@ -190,10 +248,29 @@ class product extends CI_Controller {
                 } //Visas atzÄ«mÄ“tÄ�s kategorijas
             }
         }
-       redirect("Product");
-    } 
+        redirect("Product");
+    }
     
     
+    public function delete_person($ID){
+         $this->Product_model->delete_person($ID);
+         redirect("/Products_public/all_persons");
+    }
+    
+     public function delete_product($ID){
+         $this->Product_model->delete_product($ID);
+         redirect("/product");
+    }
+    
+     public function delete_firm($ID){
+         $this->Product_model->delete_firm($ID);
+         redirect("/Product/all_firms");
+    }
+    
+     public function delete_group($ID){
+         $this->Product_model->delete_group($ID);
+         redirect("/Product/all_firms");
+    }
 
 }
 

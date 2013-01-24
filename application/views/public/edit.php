@@ -1,7 +1,7 @@
 <div id ="contest" class="span11 center_elem  main_elem">
     <h2>Pievienot reklamēšanās reizi  </h2>
     <div class ='form_settings'>
-        <?php echo form_open('Products_public/takeplace_add'); ?>
+        <?php echo form_open('Products_public/take_edit'); ?>
 
         <p>
             <?php
@@ -12,15 +12,6 @@
                 'id' => 'cena',
                 'maxlength' => '45',
                 'value' => $public->cena
-            );
-
-            echo form_input($data);
-            
-             $data = array(
-                'name' => 'ID',
-                'id' => 'ID',
-                'type' => 'hidden',
-                'value' => $public->ID
             );
 
             echo form_input($data);
